@@ -4,11 +4,11 @@ import AVFoundation
 
 let arguments = CommandLine.arguments
 guard arguments.count > 1 else {
-    FileHandle.standardError.write("Usage: mu-cli /path/to/audio/file.mp3\n".data(using: .utf8)!)
+    FileHandle.standardError.write("Usage: \n full analysis - mu-cli /path/to/audio/file.mp3 \n only loudness - mu-cli -l /path/to/audio/file.mp3\n ".data(using: .utf8)!)
     exit(1)
 }
 
-let fileURL = URL(fileURLWithPath: arguments[1])
+let fileURL = URL(fileURLWithPath: arguments.last ?? "")
 
 do {
     let asset = AVURLAsset(
@@ -17,7 +17,10 @@ do {
     )
 
     let session = try await MusicUnderstandingSession(asset: asset)
-    let results = try await session.analyze()
+    
+    let results = switch arguments[1]  {
+        case "-l":  ( try await session.analyze(for: [.loudness]) )
+        default:    ( try await session.analyze() )}
 
     let encoder = JSONEncoder()
     encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
