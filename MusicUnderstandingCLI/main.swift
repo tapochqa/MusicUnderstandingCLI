@@ -21,6 +21,11 @@ do {
 
     let encoder = JSONEncoder()
     encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+    encoder.nonConformingFloatEncodingStrategy = .convertToString(
+        positiveInfinity: "Infinity",
+        negativeInfinity: "-Infinity",
+        nan: "NaN"
+    )
     let jsonData = try encoder.encode(results)
 
     if let jsonString = String(data: jsonData, encoding: .utf8) {
