@@ -16,5 +16,5 @@ USAGE
 Full analysis:
 mu-cli /path/to/audio
 
-Only loudness (cause it's only one part that's fast):
+Only loudness (cause it's the only part that's fast):
 mu-cli -l /path/to/audio
