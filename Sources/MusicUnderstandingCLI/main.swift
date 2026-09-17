@@ -3,7 +3,7 @@ import MusicUnderstanding
 import AVFoundation
 
 
-let helpStr = "Usage: \n full analysis - mu-cli filepath \n only loudness - mu-cli --loudness filepath\n only rhythm —   mu-cli --rhythm filepath\n"
+let helpStr = "usage: mu-cli [--loudness --rhythm] [--peak --integrated --short-term --momentary --bpm] file\n"
 
 
 let arguments = CommandLine.arguments
@@ -19,9 +19,10 @@ if arguments[1] == "--help" {
 }
 
 if arguments[1] == "--version" || arguments[1] == "-v" {
-    FileHandle.standardOutput.write("Music Understanding CLI 0.3\n".data(using: .utf8)!)
+    FileHandle.standardOutput.write("Music Understanding CLI 0.4\n".data(using: .utf8)!)
     exit(0)
 }
+
 
 
 let fileURL = URL(fileURLWithPath: arguments.last ?? "")
@@ -33,8 +34,6 @@ do {
     )
 
     let session = try await MusicUnderstandingSession(asset: asset)
-    
-
     
     let results = switch arguments[1]  {
         case "--loudness", "-l":  ( try await session.analyze(for: [.loudness]) )
@@ -48,7 +47,19 @@ do {
         negativeInfinity: "-Infinity",
         nan: "NaN"
     )
-    let jsonData = try encoder.encode(results)
+    
+    
+    let jsonData = switch arguments[2] {
+               case "--bpm", "-b": ( try encoder.encode (results.rhythm?.beatsPerMinute) )
+              case "--peak", "-p": ( try encoder.encode (results.loudness?.peak.value) )
+        case "--integrated", "-i": ( try encoder.encode (results.loudness?.integrated.value) )
+        case "--short-term", "-s": ( try encoder.encode (results.loudness?.shortTerm.max(by:
+                                                        { ($0.value) < ($1.value)  })?.value))
+         case "--momentary", "-m": ( try encoder.encode (results.loudness?.momentary.max(by:
+                                                    { ($0.value) < ($1.value)  })?.value))
+                          default: ( try encoder.encode(results) )
+    }
+    
 
     if let jsonString = String(data: jsonData, encoding: .utf8) {
         print(jsonString)
