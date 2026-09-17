@@ -65,7 +65,7 @@ do {
         print(jsonString)
     }
 
-    exit(0)   // <-- guarantees a clean exit
+    exit(0)   
 } catch {
     FileHandle.standardError.write("Analysis failed: \(error)\n".data(using: .utf8)!)
     exit(1)
