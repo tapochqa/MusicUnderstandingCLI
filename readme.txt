@@ -23,7 +23,6 @@ Integrated as float (LUFS): mu-cli --loudness --integrated file
 Max short-term as float (LUFS): mu-cli --loudness --short-term file
 Max momentary as float (LUFS): mu-cli --loudness --momentary file
 
-
 Only rhythm:
 Full map: mu-cli --rhythm file
 BPM as int: mu-cli --rhythm --bpm file
