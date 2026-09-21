@@ -48,17 +48,18 @@ do {
         nan: "NaN"
     )
     
-    
-    let jsonData = switch arguments[2] {
-               case "--bpm", "-b": ( try encoder.encode (results.rhythm?.beatsPerMinute) )
-              case "--peak", "-p": ( try encoder.encode (results.loudness?.peak.value) )
+    let jsonData =
+    if arguments.count > 2 {
+        switch arguments[2] {
+        case "--bpm", "-b": ( try encoder.encode (results.rhythm?.beatsPerMinute) )
+        case "--peak", "-p": ( try encoder.encode (results.loudness?.peak.value) )
         case "--integrated", "-i": ( try encoder.encode (results.loudness?.integrated.value) )
         case "--short-term", "-s": ( try encoder.encode (results.loudness?.shortTerm.max(by:
-                                                        { ($0.value) < ($1.value)  })?.value))
-         case "--momentary", "-m": ( try encoder.encode (results.loudness?.momentary.max(by:
-                                                    { ($0.value) < ($1.value)  })?.value))
-                          default: ( try encoder.encode(results) )
-    }
+                                                       { ($0.value) < ($1.value)  })?.value))
+        case "--momentary", "-m": ( try encoder.encode (results.loudness?.momentary.max(by:
+                                                       { ($0.value) < ($1.value)  })?.value))
+        default: ( try encoder.encode(results) )
+                                    }} else { try encoder.encode(results) }
     
 
     if let jsonString = String(data: jsonData, encoding: .utf8) {
